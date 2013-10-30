@@ -7,11 +7,11 @@ categories: linux networking ubuntu
 
 ## Port forwarding with iptables
 
-The PREROUTING chain in the nat table is applied before a packet is routed, the below rule says when any packet is incoming through the interface eth0 to port 80, redirect it to port 8000 
+The PREROUTING chain in the nat table is applied before a packet is routed, the below rule says when any packet is incoming through the interface eth0 to port 80, redirect it to port 8000.
 
 	sudo iptables -t nat -A PREROUTING -i eth0 --dport 80 -j REDIRECT --to-ports 8000
 
-when the packet is generated from the same machine, say for e.g you might be trying to reach localhost:80, still the packet should be directed to the port 8000. The below rule does the same
+when a packet is generated from the same machine, say for e.g you might be trying to reach localhost:80, still the packet should be redirected to the port 8000. The below rule does that.
 
 	sudo iptables -t nat -A OUTPUT -o lo --dport 80 -j REDIRECT --to-ports 8000
 
