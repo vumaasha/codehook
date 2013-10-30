@@ -1,0 +1,23 @@
+---
+layout: post
+title:  "iptables"
+date:   2013-10-31 00:16:33
+categories: linux networking ubuntu 
+---
+
+## Port forwarding with iptables
+
+The PREROUTING chain in the nat table is applied before a packet is routed, the below rule says when any packet is incoming through the interface eth0 to port 80, redirect it to port 8000 
+
+	sudo iptables -t nat -A PREROUTING -i eth0 --dport 80 -j REDIRECT --to-ports 8000
+
+when the packet is generated from the same machine, say for e.g you might be trying to reach localhost:80, still the packet should be directed to the port 8000. The below rule does the same
+
+	sudo iptables -t nat -A OUTPUT -o lo --dport 80 -j REDIRECT --to-ports 8000
+
+Whenever the options ```-t nat``` and  ```-j REDIRECT```, the reverse mapping is automatically taken care of, i.e the output from port 8000 is automatically redirected to port 80, so it is sufficient to define one way redirection in the rule.
+
+References:
+----------
+http://serverfault.com/questions/197426/how-does-the-iptables-chain-output-work
+http://www.netfilter.org/documentation/HOWTO//packet-filtering-HOWTO.html
