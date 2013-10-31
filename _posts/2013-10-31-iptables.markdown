@@ -5,11 +5,11 @@ date:   2013-10-31 00:16:33
 categories: linux networking ubuntu 
 ---
 
-## Port forwarding with iptables
+# Port forwarding with iptables
 
 The PREROUTING chain in the nat table is applied before a packet is routed, the below rule says when any packet is incoming through the interface eth0 to port 80, redirect it to port 8000.
 
-	sudo iptables -t nat -A PREROUTING -i eth0 --dport 80 -j REDIRECT --to-ports 8000
+	sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-ports 8000
 
 when a packet is generated from the same machine, say for e.g you might be trying to reach localhost:80, still the packet should be redirected to the port 8000. The below rule does that.
 
@@ -17,7 +17,85 @@ when a packet is generated from the same machine, say for e.g you might be tryin
 
 Whenever the options ```-t nat``` and  ```-j REDIRECT```, the reverse mapping is automatically taken care of, i.e the output from port 8000 is automatically redirected to port 80, so it is sufficient to define one way redirection in the rule.
 
-References:
-----------
-http://serverfault.com/questions/197426/how-does-the-iptables-chain-output-work
-http://www.netfilter.org/documentation/HOWTO//packet-filtering-HOWTO.html
+iptables by default does not block anything, anything that need to blocked has to be explicity specified. The best practice is to block everything and then add exceptions to it, as they are required. This approach provides better accuracy. Below are some good to have iptable rules. 
+
+# Basic firewall with iptables
+
+filter table is the default table in iptabes, when ```-t``` option is not specified, the rules get added to the filter table. 
+
+1. Accept all the incoming traffic from the loopback adapter.
+
+	```
+	sudo iptables -A INPUT -i lo -j ACCEPT
+	```
+2. Reject any incoming packets to the loopback adapter, which does not originate from the loopback adapter.( *when can this happen? well, mostly its malicious, and it's better to be safe than sorry.* )
+
+	```
+	sudo iptables -A INPUT ! -i lo -d 127.0.0.0/8 -j REJECT
+	```
+
+3. Accept already existing connections that has seen packets in both ways and new connections that are started by existing connections.
+
+	```
+	sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+	```
+
+4. Allow incoming http, https(SSL) connections and ssh. If you are using port forwarding to avoid running your website as super user, in order to bind to the port 80. Make sure to allow that port as well.
+
+	```
+	sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+	sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+	sudo iptables -A INPUT -p tcp -m state --state NEW --dport 22 -j ACCEPT
+	sudo iptables -A INPUT -p tcp --dport 9000 -j ACCEPT
+	```
+
+
+5. Allow ping if you want to ( write about ping of death)
+
+	```
+	sudo iptables -A INPUT -i eth0 -p icmp -m icmp --icmp-type 8 -j ACCEPT
+	```
+
+6. Log information about denied packets, this is very important and could be very helpful in finding malicious access attempts. The log usally goes in to syslog and can be found in /var/syslog in ubuntu.
+
+	```
+	sudo iptables -A INPUT -m limit --limit 50/min -j LOG --log-prefix "iptables denied: " --log-level 7
+	```
+
+7. The most important thing is to reject all the rest, and also you make sure this is the last command, iptables is like a switch case statement, it stops and returns as soon as it finds a matching rule, so if you place this rule first by mistake then all the incoming traffic will be rejected.
+
+	```
+	sudo iptables -A INPUT -j REJECT
+	sudo iptables -A FORWARD -j REJECT
+	```
+
+8. Allow all the outbound traffic from the machine, this can also be restricted similar to input.
+
+    ```
+    sudo iptables -A OUTPUT -j ACCEPT
+    ```
+
+   To see the rules that are currently added to iptables, use the command
+
+	```
+	sudo iptables -v -L
+	sudo iptables -t nat -v -L
+	```
+
+iptables does not save the added rules by default, the rules added to the iptables can be saved to a file, by using the command ```sudo iptables-save```, iptables rules could be saved to a file by 
+
+    sudo iptables-save > firewall.rules
+
+When the added rules are saved to a file, these rules could be loaded everytime the system boots. But, it is very important when the rules are added, it is ideal to activate them before the system joins the network, so the firewall will be active when the system joins a network. In ubuntu create a file filewall with the below content and place it in the folder ```/etc/network/if-pre-up.d```
+
+```
+#!/bin/sh
+/sbin/iptables-restore < /etc/iptables.firewall.rules
+```
+
+
+
+##References:
+* The best and easy to understand resource on iptables in the man pages. please consult ```man iptables``` to know more about iptables.
+* http://serverfault.com/questions/197426/how-does-the-iptables-chain-output-work
+* http://www.netfilter.org/documentation/HOWTO//packet-filtering-HOWTO.html
