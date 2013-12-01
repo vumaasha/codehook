@@ -1,0 +1,9 @@
+{
+    "GBR": { "popularity": 0},
+    "DEU": { "popularity": 200},
+    "USA": { "popularity": 300},
+    "BRA": { "popularity": 400},
+    "CAN": { "popularity": 500},
+    "FRA": { "popularity": 600},
+    "RUS": { "popularity": 700}
+}
