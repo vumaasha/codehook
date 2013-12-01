@@ -18,7 +18,7 @@ Actually, Kartograph is two libraries. One generates beautiful & compact SVG map
 
 creating maps using Kartograph is pretty simple. Infact, it involves 3 simple steps.
 
-<img src="/img/kartograph.png" height="400" width="640">
+<img src="/codehook/img/kartograph.png" height="400" width="640">
 
 Step 1
 ======
@@ -35,7 +35,7 @@ Kartograph.py is a python library that takes the *shape file* as input and provi
 
 Learning by building an example is always a good way to learn something. Lets do the same here. Lets build a choropleth map of the world. For people who are wondering what a choropleth is? Take a look at the image below. This is a cholorpleth that is made from google geo charting. We will see how to develop a similar cholorpleth map using kartograph.
     
-<img src="/img/google_geochart.png" height="400" width="640" />
+<img src="/codehook/img/google_geochart.png" height="400" width="640" />
 
  First of all, we need a shape file which contains information about the world countries and their boundaries. One such file could be downloaded from the [link](http://geocommons.com/overlays/5603). Now, we will convert this shapefile into svg using Kartograph.py. Now extract the downloaded zip file, after extracting you will find files with 3 different extensions namely .shp, .dbp, .shx. place all of the files in the same folder. 
 
@@ -75,13 +75,13 @@ The choropleth that is implemented using Kartograph.js is shown below. No need t
 
 <div id="map">&nbsp;</div>
 
-<link rel="stylesheet" type="text/css" href="/css/jquery.qtip.css" />
+<link rel="stylesheet" type="text/css" href="/codehook/css/jquery.qtip.css" />
 
-<script type="text/javascript" src="/resources/js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="/resources/js/raphael-2.1.0.min.js"></script>
-<script type="text/javascript" src="/resources/js/jquery.qtip.min.js"></script>
-<script type="text/javascript" src="/resources/js/chroma.min.js"></script>
-<script type="text/javascript" src="/resources/js/kartograph.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/raphael-2.1.0.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/chroma.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/kartograph.min.js"></script>
 
 <script type="text/javascript">
     $(function() {
@@ -91,8 +91,8 @@ The choropleth that is implemented using Kartograph.js is shown below. No need t
         // initialize qtip tooltip class
         $.fn.qtip.defaults.style.classes = 'ui-tooltip-bootstrap';
         $.fn.qtip.defaults.style.def = false;
-        $.getJSON('/resources/kartograph/popularity.json', function(countryPopularity) {
-            $.get('/resources/kartograph/world.svg', function(svg) {
+        $.getJSON('/codehook/resources/kartograph/popularity.json', function(countryPopularity) {
+            $.get('/codehook/resources/kartograph/world.svg', function(svg) {
                     var div = $('#map');
                     var map = kartograph.map(div, 640, 420),
                     color = chroma.scale('Greens').domain(countryPopularity,5,'quantiles','popularity');
@@ -123,12 +123,12 @@ The choropleth that is implemented using Kartograph.js is shown below. No need t
 
 
 <!-- include the dependencies and kartograph.js at the last-->
-<link rel="stylesheet" type="text/css" href="/css/jquery.qtip.css" />
-<script type="text/javascript" src="/resources/js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="/resources/js/raphael-2.1.0.min.js"></script>
-<script type="text/javascript" src="/resources/js/jquery.qtip.min.js"></script>
-<script type="text/javascript" src="/resources/js/chroma.min.js"></script>
-<script type="text/javascript" src="/resources/js/kartograph.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/codehook/css/jquery.qtip.css" />
+<script type="text/javascript" src="/codehook/resources/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/raphael-2.1.0.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/chroma.min.js"></script>
+<script type="text/javascript" src="/codehook/resources/js/kartograph.min.js"></script>
 
 <script type="text/javascript">
     $(function() {
